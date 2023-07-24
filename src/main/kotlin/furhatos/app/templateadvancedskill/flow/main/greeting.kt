@@ -17,7 +17,9 @@ import furhatos.util.Language
 // define the state as a function to be able to pass arguments to it
 fun GreetUser(response: Response<*>? = null): State = state(Parent) {
     onEntry {
+
         if (response != null) raise(response) // raise any response that was passed on and handle the response here
+
         else furhat.listen() // or start a listen to collect a response in this state
     }
     // Handle partial responses where the user said a greeting and something else.
