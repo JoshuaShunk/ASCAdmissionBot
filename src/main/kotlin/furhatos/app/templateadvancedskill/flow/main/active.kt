@@ -2,6 +2,7 @@ package furhatos.app.templateadvancedskill.flow.main
 
 import furhatos.app.templateadvancedskill.flow.Parent
 import furhatos.app.templateadvancedskill.flow.log
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Ticketing
 import furhatos.app.templateadvancedskill.nlu.HowAreYouIntent
 import furhatos.app.templateadvancedskill.nlu.NiceToMeetYouIntent
 import furhatos.app.templateadvancedskill.responses.gestures.hearSpeechGesture
@@ -10,7 +11,6 @@ import furhatos.app.templateadvancedskill.setting.AutoUserAttentionSwitching
 import furhatos.app.templateadvancedskill.setting.beActive
 import furhatos.app.templateadvancedskill.setting.isAttended
 import furhatos.flow.kotlin.*
-import furhatos.nlu.SimpleIntent
 import furhatos.nlu.common.Greeting
 import furhatos.util.Language
 
@@ -22,7 +22,7 @@ val Active: State = state(Parent) {
     onEntry {
         furhat.beActive()
         furhat.setInputLanguage(Language.ENGLISH_US, Language.SPANISH_US )
-        furhat.say("Hi welcome to the Arizona Science Center! My name is Titan. I am here to try to answer any question you have about the science center or maybe answer a science question or two. What can I help you with?")
+        furhat.say("Hi welcome to the Arizona Science Center! My name is Athena. I am here to try to answer any questions you have about the science center or help members purchase tickets. What can I help you with?")
         log.debug("now I'm listening")
 
         // We're leaving the initiative to the user and extending the listen timeout from default 5000 ms to 8000 ms.
@@ -52,10 +52,12 @@ val Active: State = state(Parent) {
     onResponse(tQuestions) {
         val questionIntent = it.intent as TicketingIntent
         furhat.say(questionIntent.answer)
+        goto(Ticketing)
     }
     onResponse(sQuestions) {
         val questionIntent = it.intent as SCIntent
         furhat.say(questionIntent.answer)
+        furhat.listen(8000)
     }
 
 

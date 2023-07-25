@@ -24,11 +24,7 @@ fun FlowControlRunner.activate(persona: Persona) {
 }
 
 val furhatPersona = Persona(
-        name = "Furhat",
-        face = listOf(
-                "Titan",
-                "default"), // Backup if Alex is not available
-        voice = listOf(
-                PollyNeuralVoice.Matthew()
-        )
+        name = "Titan",
+        face = listOf("Titan", "Fedora"),
+        voice = listOf(PollyNeuralVoice.Amy())
 )

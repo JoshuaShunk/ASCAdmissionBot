@@ -45,16 +45,16 @@ repositories {
 
 
 dependencies {
-    compile 'com.furhatrobotics.furhatos:furhat-commons:+'
+    compile 'com.furhatrobotics.furhatos:furhat-commons:2.1.0'
     compile 'com.furhatrobotics.assets:StandardLibraryCollection:+'
 }
 
 jar {
-    Properties properties = new Properties()
-    properties.load(project.file('skill.properties').newDataInputStream())
+    def lowerCasedName = baseName.toLowerCase()
+    def normalizedName = lowerCasedName.substring(0,1).toUpperCase() + lowerCasedName.substring(1)
     manifest.attributes(
             'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-            'Main-Class': properties.getProperty("mainclass")
+            'Main-Class': "furhatos.app.${lowerCasedName}.${normalizedName}Skill"
     )
 }
 
@@ -65,6 +65,7 @@ shadowJar {
     def version = properties.getProperty('version')
     def name = properties.getProperty('name')
     archiveName = "${name}_${version}.skill"
+
 
     manifest {
         exclude '**/Log4j2Plugins.dat'
