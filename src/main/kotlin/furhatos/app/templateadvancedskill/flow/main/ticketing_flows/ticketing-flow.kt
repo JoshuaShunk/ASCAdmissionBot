@@ -18,25 +18,23 @@ import furhatos.nlu.common.Yes
  **/
 val Ticketing: State = state {
     var admissionStage = 0
+
     onEntry {
-        furhat.ask("Are you a member of the Arizona Science Center?")
-    }
-
-    onResponse<Yes>{
-        admissionStage++
-        furhat.ask("Would you like to collect tickets bought online or buy new general admission tickets?")
-        println("Listening for response ...")
-    }
-
-    onResponse<No>{
-        furhat.say("Sorry, I am only here to help memebers purchase tickets. Please see a sales representative at the counter to purchase general admission tickets")
-        delay(400)
-        terminate()
+        val memberStatus = furhat.askYN("Are you a member of the Arizona Science Center?",10000)
+        if (memberStatus != false){
+            admissionStage++
+            furhat.ask("Would you like to collect tickets bought online or buy new general admission tickets?")
+        }
+        else{
+            furhat.say("Sorry, I am only here to help memebers purchase tickets. Please see a sales representative at the counter to purchase general admission tickets")
+            delay(400)
+            terminate()
+        }
     }
 
     onResponse("new tickets", "new general admission tickets") {
         admissionStage++
-        furhat.ask("Great! Are these tickets for today or a future visit?")
+        furhat.ask("Great! Are these tickets for today or a future visit?",10000)
     }
     onResponse("Today") {
         goto(PurchaseTicket)
