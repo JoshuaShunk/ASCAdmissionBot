@@ -1,8 +1,6 @@
 package furhatos.app.templateadvancedskill.flow.main.ticketing_flows
 
 import furhatos.flow.kotlin.*
-import furhatos.nlu.common.No
-import furhatos.nlu.common.Yes
 
 
 /**

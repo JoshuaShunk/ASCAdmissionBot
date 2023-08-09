@@ -47,6 +47,7 @@ repositories {
 dependencies {
     compile 'com.furhatrobotics.furhatos:furhat-commons:2.1.0'
     compile 'com.furhatrobotics.assets:StandardLibraryCollection:+'
+    implementation 'mysql:mysql-connector-java:8.0.33'
 }
 
 jar {

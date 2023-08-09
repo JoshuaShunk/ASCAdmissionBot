@@ -3,7 +3,7 @@ package furhatos.app.templateadvancedskill.flow.main
 import furhatos.nlu.SimpleIntent
 
 class TicketingIntent(
-    val questions : List<String>,
+    questions : List<String>,
     val answer : String
 ) : SimpleIntent(questions)
 

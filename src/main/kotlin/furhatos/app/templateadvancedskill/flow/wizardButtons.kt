@@ -30,7 +30,7 @@ val TestButtons = partialState {
         goto(Active)
     }
     onButton("Greeting", color = Color.Blue, section = Section.RIGHT) {
-        goto(GreetUser(null))
+        goto(greetUser(null))
     }
     onButton("HowAreYou", color = Color.Blue, section = Section.RIGHT) {
         call(HowAreYou)

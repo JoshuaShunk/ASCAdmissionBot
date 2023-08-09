@@ -1,18 +1,14 @@
-package furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Traveling
+package furhatos.app.templateadvancedskill.flow.main.ticketing_flows.traveling
 
 import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.CartItem
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.FinalPurchase.Checkout
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Screening.Screenings
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.finalPurchase.Checkout
 
 
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Planetarium.PurchaseAddOns
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Planetarium.todayShows
 import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.customerCart
 
 
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.Number
-import furhatos.nlu.intent
 import furhatos.util.Language
 
 
@@ -29,27 +25,29 @@ import furhatos.util.Language
  **/
 
 val travelingExhibitAddOn: State = state {
-    var admissionStage = 0
-    var showExhibit = false
+    var showExhibit: Boolean
     onEntry {
         if(todayExhibit.size <= 1){
             showExhibit = furhat.askYN("For a limited time we are also hosting " + exhibitNames(todayExhibit) +
                     " Would you like to purchase tickets to this exhibit? ")!!
             if (showExhibit){
-                val confirmedAdd = furhat.askYN("Just to confirm. You want to add " + todayExhibit[0].exhibitName  + "at a price of $" + todayExhibit[0].price.toString() + "per ticket?")
+                val confirmedAdd = furhat.askYN("Just to confirm. You want to add " + todayExhibit[0].exhibitName  + " at a price of $" + todayExhibit[0].price.toString() + " per ticket?")
 
                 if(confirmedAdd != false){
                     val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
                     val childCount = furhat.askFor<Number>("How many children ages 3-17?")
                     addToCart(todayExhibit[0].exhibitName, adultCount.toString().toInt(), childCount.toString().toInt(), todayExhibit[0].price)
                     furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for " + todayExhibit[0].exhibitName + " to your purchase!")
-                    if(furhat.askYN("Is there anything else you woud like to add to your purchase") != true){
+                    if(furhat.askYN("Is there anything else you would like to add to your purchase") != true){
                         goto(Checkout)
                     }
                 }
                 else{
                     furhat.ask("What show would you like to purchase tickets for?")
                 }
+            }
+            else{
+                goto(Checkout)
             }
         }else{
             showExhibit = furhat.askYN("For a limited time we are also hosting " + exhibitNames(todayExhibit) +
@@ -68,7 +66,7 @@ val travelingExhibitAddOn: State = state {
             val childCount = furhat.askFor<Number>("How many children ages 3-17?")
             addToCart(showIntent.exhibitName, adultCount.toString().toInt(), childCount.toString().toInt(), showIntent.price)
             furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for " + showIntent.exhibitName + " to your purchase!")
-            if(furhat.askYN("Is there anything else you woud like to add to your purchase") != true){
+            if(furhat.askYN("Is there anything else you would like to add to your purchase") != true){
                 goto(Checkout)
             }
         }

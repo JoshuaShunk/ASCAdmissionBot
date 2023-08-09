@@ -51,7 +51,7 @@ val WaitingToStart: State = state(parent = Global) {
             // EventSystem.send(SenseUserAttend.Builder().buildEvent())
             // But it will have the unfortunate effect of clearing other user data on the user.
             // So instead we simply copy the same action here as on the onUserAttend trigger.
-            log.debug("user ${users.usersAttendingFurhat.first()} attended in ${thisState.name}")
+            log.debug("user {} attended in {}", users.usersAttendingFurhat.first(), thisState.name)
             furhat.attend(users.usersAttendingFurhat.first())
             goto(Active)
         } else {

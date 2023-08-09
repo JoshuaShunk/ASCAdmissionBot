@@ -1,8 +1,8 @@
 package furhatos.app.templateadvancedskill.flow.main.ticketing_flows
 
 
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Planetarium.PurchaseAddOns
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Screening.ScreeningAddOn
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.planetarium.PurchaseAddOns
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.screening.PurchaseScreenings
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.Number
 import furhatos.util.Language
@@ -21,22 +21,21 @@ import furhatos.util.Language
  **/
 
 val PurchaseTicket: State = state {
-    var admissionStage = 0
 
     onEntry {
         furhat.say("Thank you for your interest in exploring the science center today!")
-        val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
-        val childCount = furhat.askFor<Number>("How many children ages 3-17?")
+        val adultCount: Number? = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
+        val childCount: Number? = furhat.askFor<Number>("How many children ages 3-17?")
         println("Total Adults: " + adultCount + "Child Count: " + childCount)
         customerCart.add(CartItem("Adult Ticket(s)", adultCount.toString().toInt(), 20.00))
         customerCart.add(CartItem("Child Ticket(s)", childCount.toString().toInt(), 15.00))
-        val addons = furhat.askYN("Thank you! During your last visit you enjoyed a planetarium show! Would you like to enhance your experience with any add-on tickets? There are two planetarium shows available today at 12:00pm and 2:00pm. ")
+        val addons = furhat.askYN("Thank you! During your last visit you enjoyed a planetarium show! Would you like to enhance your experience with any add-on tickets?")
 
         if(addons != false){
             goto(PurchaseAddOns)
         }
         else{
-            goto(ScreeningAddOn)
+            goto(PurchaseScreenings)
         }
     }
 

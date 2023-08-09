@@ -58,7 +58,7 @@ val Init: State = state {
         see: https://docs.furhat.io/nlu/#alternative-classification */
         LogisticMultiIntentClassifier.setAsDefault()
 
-        /** Set default microepressions **/
+        /** Set default micro expressions **/
         furhat.setMicroexpression(DEFAULT_MICROEXPRESSIONS)
 
         /** Initiate loggers **/

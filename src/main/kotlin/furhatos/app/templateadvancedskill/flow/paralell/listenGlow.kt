@@ -21,7 +21,7 @@ import java.awt.Color
 val SOFT_PURPLE = Color(20, 5, 40)
 val SOFT_WHITE = Color(20, 20, 20)
 val VERY_SOFT_WHITE = Color(5, 5, 5)
-val OFF_COLOUR = Color.BLACK
+val OFF_COLOUR: Color = Color.BLACK
 
 /** Colours to use for our different modes **/
 val LISTEN_COLOUR = SOFT_PURPLE
@@ -29,7 +29,7 @@ val ACTIVE_COLOUR = SOFT_WHITE
 val IDLE_COLOUR = VERY_SOFT_WHITE
 val SLEEPING_COLOUR = VERY_SOFT_WHITE
 
-/** Controls if we want to use LED's when in this state **/
+/** Controls if we want to use LEDs when in this state **/
 var listenGlow = true
 var activeGlow = true
 var idlingGlow = false
@@ -114,7 +114,7 @@ fun Furhat.setModeGlow() {
  * @param listenTime How long to listen for noSpeechTimeout
  */
 fun FlowControlRunner.fadeListen(listenTime: Int = furhat.param.noSpeechTimeout) {
-    parallel { goto(ListenFader(listenTime)) }
+    parallel { goto(listenFader(listenTime)) }
     furhat.listen(listenTime)
 }
 
@@ -122,7 +122,7 @@ fun FlowControlRunner.fadeListen(listenTime: Int = furhat.param.noSpeechTimeout)
  * State that runs in parallel to fade the led-strip a little before listening stops
  * @param fadeTime The LED should fade 500 ms before this
  */
-fun ListenFader(fadeTime: Int): State = state {
+fun listenFader(fadeTime: Int): State = state {
     onEntry {
         print(1)
     }

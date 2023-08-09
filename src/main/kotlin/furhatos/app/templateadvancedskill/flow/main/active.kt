@@ -39,15 +39,15 @@ val Active: State = state(Parent) {
     include(AutoGlanceAway) // Glance away after some time of eye contact
 
     /** Handle simple meet and greet conversation **/
-    // Handle multiple intents where one part of the intent was a Greeting
+    /* Handle multiple intents where one part of the intent was a Greeting */
     onPartialResponse<Greeting> {
         furhat.attend(it.userId) // attend the user that spoke
-        goto(GreetUser(it))
+        goto(greetUser(it))
     }
 
     onResponse(listOf(Greeting(), HowAreYouIntent(), NiceToMeetYouIntent())) {
         furhat.attend(it.userId) // attend the user that spoke
-        goto(GreetUser(it))
+        goto(greetUser(it))
     }
     onResponse(tQuestions) {
         val questionIntent = it.intent as TicketingIntent

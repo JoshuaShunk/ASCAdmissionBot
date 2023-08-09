@@ -15,7 +15,7 @@ import furhatos.util.Language
  *
  */
 // define the state as a function to be able to pass arguments to it
-fun GreetUser(response: Response<*>? = null): State = state(Parent) {
+fun greetUser(response: Response<*>? = null): State = state(Parent) {
     onEntry {
 
         if (response != null) raise(response) // raise any response that was passed on and handle the response here
@@ -84,7 +84,7 @@ fun main(args: Array<String>) {
     while (true) {
         println("Enter your user response...")
         val utterance = readLine()
-        val results = GreetUser(null).getIntentClassifier(lang = Language.ENGLISH_US).classify(utterance!!)
+        val results = greetUser(null).getIntentClassifier(lang = Language.ENGLISH_US).classify(utterance!!)
         if (results.isEmpty()) {
             println("No match")
         } else {
