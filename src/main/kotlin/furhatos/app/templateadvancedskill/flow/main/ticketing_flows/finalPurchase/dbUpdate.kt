@@ -32,7 +32,7 @@ object DBU {
 
             // Ideally, fetch these from a configuration file or environment variable
             val dbUser = "root"
-            val dbPassword = "yourpassword"
+            val dbPassword = "Hockeyfan7696!"
 
             Class.forName(myDriver)
             val conn = DriverManager.getConnection(myUrl, dbUser, dbPassword)
