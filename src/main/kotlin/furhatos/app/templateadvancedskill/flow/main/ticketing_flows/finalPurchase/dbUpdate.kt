@@ -4,6 +4,10 @@ import java.sql.DriverManager
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import kotlin.random.Random
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.finalPurchase.user
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.finalPurchase.password
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.finalPurchase.dbUrl
+
 
 /**
  * A Java MySQL UPDATE example.
@@ -28,12 +32,11 @@ object DBU {
         try {
             // create a MySQL database connection
             val myDriver = "com.mysql.cj.jdbc.Driver"
-            val myUrl = "jdbc:mysql://localhost:3306/ascdb"
+            val myUrl = dbUrl
 
             // Ideally, fetch these from a configuration file or environment variable
-            val dbUser = "root"
-            val dbPassword = "Hockeyfan7696!"
-
+            val dbUser = user
+            val dbPassword = password
             Class.forName(myDriver)
             val conn = DriverManager.getConnection(myUrl, dbUser, dbPassword)
 

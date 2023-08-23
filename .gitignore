@@ -7,3 +7,4 @@ build/
 /.idea
 save_flow.xml
 *.iml
+src/main/kotlin/furhatos/app/templateadvancedskill/flow/main/ticketing_flows/finalPurchase/dbconfig.kt
