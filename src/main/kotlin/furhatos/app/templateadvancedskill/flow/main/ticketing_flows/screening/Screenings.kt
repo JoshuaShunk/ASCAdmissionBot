@@ -1,30 +1,18 @@
-/*
-
-package furhatos.app.templateadvancedskill.flow.main.ticketing_flows.Screening
-
-
-import furhatos.nlu.SimpleIntent
-
-class Screenings (
-    val screenName : String,
-    val time : List<String>,
-    val price : Double
-) : SimpleIntent(screenName){
-    constructor() : this("DefaultName", listOf("default times"), 0.00)
-}
-val todayScreenings = listOf<Screenings>(
-    Screenings("Jane Goodall Reasons for Hope", listOf("11:00","1:00"), 9.50)
-
-)
-*/
-
 package furhatos.app.templateadvancedskill.flow.main.ticketing_flows.screening
 
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.planetarium.Event
+
+
 // Defines a theater screening with attributes like screeningName and time
-data class Screening(val screeningName: String, val time: List<String>, val price: Double)
+data class Screening(
+    override val name: String,
+    override val time: List<String>,
+    override val price: Double
+) : Event
 
 // List of available screenings for the day
 val todayScreenings = listOf(
-    Screening("Jane Goodall Reasons for Hope", listOf("11:00", "13:00"), 15.0)
+    Screening("Jane Goodall Reasons for Hope", listOf("11:00", "13:00"), 15.0),
+    Screening("My New Test show", listOf("11:00", "15:00", "18:00"), 15.0)
 )
 

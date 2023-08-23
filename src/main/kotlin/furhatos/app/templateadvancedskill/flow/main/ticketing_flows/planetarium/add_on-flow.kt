@@ -1,156 +1,146 @@
 package furhatos.app.templateadvancedskill.flow.main.ticketing_flows.planetarium
 
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.CartItem
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.customerCart
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.screening.PurchaseScreenings
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.screening.to12HourFormat
+
+import furhatos.app.templateadvancedskill.flow.main.normalizeTimeInput
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.*
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.traveling.travelingExhibitAddOn
+import furhatos.app.templateadvancedskill.flow.main.to12HourFormat
+import furhatos.app.templateadvancedskill.flow.main.to24HourFormat
+
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.Time
-import java.time.LocalTime
-import furhatos.nlu.common.Number
 
+val PurchaseShows: State = state {
 
-
-val PurchaseAddOns: State = state {
     onEntry {
         if (todayShows.size == 1) {
             val onlyShow = todayShows.first()
-            val availableTimes = filterPastShowTimes(onlyShow)
+            val availableTimes = filterPastTimes(onlyShow)
             if (availableTimes.size == 1) {
-                furhat.askYN("At the science center today we are showing ${onlyShow.showName} at ${to12HourFormat(availableTimes.first())}. Would you like to purchase tickets for this show?")
-                goto(ConfirmShowWithOneTime)
-            } else if (todayShows.size > 1) {
-                furhat.askYN("At the science center today we are showing ${onlyShow.showName} at the following times: ${
-                    availableTimes.joinToString(
-                        separator = " and "
-                    ) { to12HourFormat(it) }
-                }. Would you like to purchase tickets for this show?")
-                goto(AskForTimeForSingleShow)
-            } else {
-                goto(PurchaseScreenings)
+                val buyTickets = furhat.askYN("At the science center today we are showing ${onlyShow.name} at ${to12HourFormat(availableTimes.first())}. Would you like to purchase tickets for this screening?")
+                if(buyTickets == true){goto(ConfirmShowWithOneTime)}
+                else{goto(travelingExhibitAddOn)}
+
+            } else if (availableTimes.size > 1){
+                if (furhat.askYN("At the science center today we are showing ${onlyShow.name} at the following times: ${
+                        availableTimes.joinToString(
+                            separator = " and "
+                        ) { to12HourFormat(it) }
+                    }. Would you like to purchase tickets for one of these screenings?")==true){
+                    goto(AskForTimeForSingleShow)
+                }else{goto(travelingExhibitAddOn)}
+            }else{
+                //furhat.say("Sorry. There are no more available showing of ${onlyShow.showName} today. Come back another time to watch it!")
+                goto(travelingExhibitAddOn)
             }
         } else if (todayShows.size > 1) {
-            furhat.askYN("At the science center today we have the following shows: ${showNames(todayShows)}. Would you like to purchase tickets for any of these?")
-            goto(AskForSpecificShow)
+            if (furhat.askYN("At the science center today we have the following screenings: ${eventNames(todayShows)}. Would you like to purchase tickets for any of these?") == true){
+                goto(AskForSpecificShow)
+            } else {goto(travelingExhibitAddOn)}
         } else {
-            furhat.say("Sorry there are no more available shows today.")
-            goto(PurchaseScreenings)
+            furhat.say("Sorry there are no more available screenings today.")
+            goto(travelingExhibitAddOn)
         }
+
     }
 }
 
 val AskForTimeForSingleShow: State = state {
     onEntry {
-        val availableTimes = filterPastShowTimes(todayShows.first())
-        furhat.ask("What time would you like to watch the show? Available options are: ${availableTimes.joinToString(separator = " and ")}")
-    }
-
-    onResponse<Time> {
-        val selectedTime = to12HourFormat(it.text)
-        val show = todayShows.first()
-        if (selectedTime in show.time) {
-            confirmShowPurchase(furhat, show, selectedTime)
-            goto(PurchaseScreenings)
-        } else {
-            furhat.say("Sorry, that's not a valid show time for ${show.showName}.")
-            reentry()
-        }
-    }
-
-    onNoResponse {
-        terminate()
-    }
-}
-
-val AskForSpecificShow: State = state {
-    onEntry {
-        furhat.ask("What show would you like to purchase tickets for?")
+        val availableTimes = filterPastTimes(todayShows.first())
+        val formattedTimes = availableTimes.map { to12HourFormat(it) }
+        furhat.ask("What time would you like to watch the show? Available options are: ${formattedTimes.joinToString(separator = " and ")}")
     }
 
     onResponse {
-        val userInput = it.text.toLowerCase()
-        val selectedShow = getShowByName(userInput)
-        if (selectedShow != null) {
-            val (success, time) = handleShowSelection(furhat, selectedShow)
-            if (success && time != null) {
-                confirmShowPurchase(furhat, selectedShow, time)
-                goto(PurchaseScreenings)
-            }
-        } else {
-            furhat.say("Sorry, I didn't recognize that show.")
-            reentry()
-        }
-    }
+        val selectedShow = todayShows.first()
+        print("Normalized Time: " + normalizeTimeInput(it.text))
 
-    onNoResponse {
-        terminate()
+        if (normalizeTimeInput(it.text) != null) {
+
+            if (normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) } in selectedShow.time) {
+                confirmEventPurchase(furhat, selectedShow, it.text)
+                goto(travelingExhibitAddOn)
+            } else {
+                furhat.say("Sorry, that's not a valid show time for ${selectedShow.name}.")
+                reentry()
+            }
+        }
     }
 }
 
 val ConfirmShowWithOneTime: State = state {
     onEntry {
         val onlyShow = todayShows.first()
-        val availableTimes = filterPastShowTimes(onlyShow)
-        confirmShowPurchase(furhat, onlyShow, availableTimes.first())
-        goto(PurchaseScreenings)
+        val availableTimes = filterPastTimes(onlyShow)
+        confirmEventPurchase(furhat, onlyShow, to12HourFormat(availableTimes.first()))
+        goto(travelingExhibitAddOn)
     }
 }
 
+val AskForSpecificShow: State = state {
 
+    var selectedShow: Show? = null
+    var selectedTime: String?
+    var selectionSuccess: Boolean
 
-// Helper functions:
-fun getShowByName(name: String): Show? {
-    return todayShows.find { it.showName.equals(name, ignoreCase = true) }
-}
+    onEntry {
+        furhat.ask("What show would you like to purchase tickets for?")
+    }
 
-fun handleShowSelection(furhat: Furhat, show: Show): Pair<Boolean, String?> {
-    val availableTimes = filterPastShowTimes(show)
-    return if (availableTimes.size == 1) {
-        Pair(true, availableTimes.first())
-    } else if (availableTimes.isNotEmpty()) {
-        furhat.ask("The show ${show.showName} is available at the following times: ${
-            availableTimes.joinToString(", ") {
-                to12HourFormat(
-                    it
-                )
+    onResponse<Time> {
+        if (selectedShow != null && normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) } in selectedShow!!.time) {
+            selectedTime = normalizeTimeInput(it.text)
+            confirmEventPurchase(furhat, selectedShow, selectedTime)
+            goto(travelingExhibitAddOn)
+        } else if (selectedShow != null) {
+            furhat.say("Sorry, that's not a valid show time for ${selectedShow?.name}.")
+            reentry()
+        }
+    }
+
+    onResponse {
+        val normalizedTime = normalizeTimeInput(it.text.toLowerCase())
+        if(normalizedTime != null && normalizedTime in selectedShow!!.time && selectedShow != null){
+            selectedTime = it.text
+            confirmEventPurchase(furhat, selectedShow, selectedTime)
+            goto(travelingExhibitAddOn)
+        }
+        else {
+            val userInput = it.text.toLowerCase()
+            selectedShow = getEventByName(userInput, todayShows) as? Show
+
+            if (selectedShow != null) {
+                val (success, time) = handleEventSelection(furhat, selectedShow!!)
+                selectionSuccess = success
+                if (time != null) {
+                    selectedTime = time
+                }
+            } else {
+                furhat.say("Sorry, I didn't recognize that show.")
+                reentry()
             }
-        }. Which one would you prefer?")
-        Pair(false, null)
-    } else {
-        furhat.say("Sorry, there are no more available times for ${show.showName} today.")
-        Pair(false, null)
-    }
-}
-
-fun confirmShowPurchase(furhat: Furhat, show: Show, time: String) {
-    if(furhat.askYN("You have selected the ${show.showName} show at ${to12HourFormat(time)}. Would you like to confirm this?") ==true){
-        val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
-        val childCount = furhat.askFor<Number>("How many children ages 3-17?")
-        if(adultCount.toString().toInt()>0){
-            customerCart.add(CartItem(show.showName + ("Adult"),adultCount.toString().toInt(), show.price.toString().toDouble()))
         }
-        if(childCount.toString().toInt()>0){
-            customerCart.add(CartItem(show.showName + ("Child"),childCount.toString().toInt(), show.price.toString().toDouble()))
+
+        if (selectionSuccess) {
+            goto(travelingExhibitAddOn)
+        } else {
+            reentry()
         }
-        furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for the " + show.time[0] + " showing of " + show.showName + " to your purchase!")
     }
 
-}
-
-fun showNames(shows: List<Show>): String {
-    return shows.joinToString(separator = " and ") { it.showName }
-}
-
-fun getCurrentTime(): Pair<Int, Int> {
-    val now = LocalTime.now()
-    return Pair(now.hour, now.minute)
-}
-
-fun filterPastShowTimes(show: Show): List<String> {
-    val (currentHour, currentMinute) = getCurrentTime()
-    return show.time.filter {
-        val (showHour, showMinute) = it.split(":").map { timePart -> timePart.toInt() }
-        showHour > currentHour || (showHour == currentHour && showMinute > currentMinute)
+    onNoResponse {
+        terminate()
     }
 }
+
+
+
+
+
+
+
+
+
+
 

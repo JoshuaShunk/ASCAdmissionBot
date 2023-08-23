@@ -1,7 +1,7 @@
 package furhatos.app.templateadvancedskill.flow.main.ticketing_flows
 
 
-import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.planetarium.PurchaseAddOns
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.planetarium.PurchaseShows
 import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.screening.PurchaseScreenings
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.Number
@@ -32,7 +32,7 @@ val PurchaseTicket: State = state {
         val addons = furhat.askYN("Thank you! During your last visit you enjoyed a planetarium show! Would you like to enhance your experience with any add-on tickets?")
 
         if(addons != false){
-            goto(PurchaseAddOns)
+            goto(PurchaseShows)
         }
         else{
             goto(PurchaseScreenings)

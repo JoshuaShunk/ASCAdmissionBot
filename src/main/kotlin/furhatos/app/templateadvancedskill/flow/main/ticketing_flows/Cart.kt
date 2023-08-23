@@ -1,6 +1,5 @@
 package furhatos.app.templateadvancedskill.flow.main.ticketing_flows
 
-import furhatos.nlu.SimpleIntent
 
 class CartItem (
     val item : String,
