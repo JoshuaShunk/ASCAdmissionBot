@@ -40,6 +40,7 @@ fun confirmEventPurchase(furhat: Furhat, selectedEvent: Event?, selectedTime: St
 
         if(furhat.askYN("Do you want to add tickets for your whole party?") == true){
             furhat.say("Adding ${customerCart[0].quantity} adult tickets and ${customerCart[1].quantity} child tickets for the $convertedTime showing of ${selectedEvent?.name} to your purchase!")
+
         }else{
             var adultCount: Number? = null
             var childCount: Number? = null

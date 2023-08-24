@@ -24,13 +24,13 @@ val PurchaseTicket: State = state {
 
 
     onEntry {
-        furhat.say("Thank you for your interest in exploring the science center today!")
+        furhat.say("Welcome back Joshua! Thank you for your interest in exploring the science center today!")
         val adultCount: Number? = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
         val childCount: Number? = furhat.askFor<Number>("How many children ages 3-17?")
         println("Total Adults: " + adultCount + "Child Count: " + childCount)
         customerCart.add(CartItem("Adult Ticket(s)", adultCount.toString().toInt(), 20.00))
         customerCart.add(CartItem("Child Ticket(s)", childCount.toString().toInt(), 15.00))
-        val addons = furhat.askYN("Thank you! During your last visit you enjoyed a planetarium show! Would you like to enhance your experience with any add-on tickets?")
+        val addons = furhat.askYN("Thank you! During your last visit you enjoyed a planetarium show! Would you like to enhance your experience with any planetarium add-on tickets?")
 
         if(addons != false){
             goto(PurchaseShows)

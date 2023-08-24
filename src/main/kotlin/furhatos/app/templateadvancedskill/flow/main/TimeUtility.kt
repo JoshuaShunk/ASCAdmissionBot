@@ -11,7 +11,7 @@ fun to12HourFormat(time: String): String {
 
 fun normalizeTimeInput(timeInput: String): String? {
 
-    if (timeInput == ""){
+    if (timeInput.isBlank()) {
         return null
     }
 
@@ -31,6 +31,10 @@ fun normalizeTimeInput(timeInput: String): String? {
         }
         if (timeInput.toLowerCase().contains("am") && hour == 12) {
             hour = 0
+        }
+        // Validate the hour and minute values
+        if (hour !in 0..23 || extractedMinute.toInt() !in 0..59) {
+            return null
         }
 
         // 3. Standardize to HH:MM format (24-hour format)
