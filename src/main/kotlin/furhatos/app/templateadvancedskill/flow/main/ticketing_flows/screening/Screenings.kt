@@ -12,7 +12,6 @@ data class Screening(
 
 // List of available screenings for the day
 val todayScreenings = listOf(
-    Screening("Jane Goodall Reasons for Hope", listOf("11:00", "13:00"), 15.0),
-    Screening("My New Test show", listOf("11:00", "15:00", "18:00"), 15.0)
+    Screening("Jane Goodall Reasons for Hope", listOf("11:00", "13:00"), 15.0)
 )
 

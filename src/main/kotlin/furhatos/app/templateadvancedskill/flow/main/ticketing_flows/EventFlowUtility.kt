@@ -40,7 +40,9 @@ fun confirmEventPurchase(furhat: Furhat, selectedEvent: Event?, selectedTime: St
 
         if(furhat.askYN("Do you want to add tickets for your whole party?") == true){
             furhat.say("Adding ${customerCart[0].quantity} adult tickets and ${customerCart[1].quantity} child tickets for the $convertedTime showing of ${selectedEvent?.name} to your purchase!")
-
+            if (selectedEvent != null) {
+                customerCart.add(CartItem("Adult ticket for" + selectedEvent.name, customerCart[0].quantity.toString().toInt(), selectedEvent.price))
+            }
         }else{
             var adultCount: Number? = null
             var childCount: Number? = null
@@ -60,6 +62,10 @@ fun confirmEventPurchase(furhat: Furhat, selectedEvent: Event?, selectedTime: St
             }
 
             furhat.say("Adding $adultCount adult tickets and $childCount child tickets for the $convertedTime showing of ${selectedEvent?.name} to your purchase!")
+            if (selectedEvent != null) {
+                customerCart.add(CartItem("Adult ticket for" + selectedEvent.name, adultCount.toString().toInt(), selectedEvent.price))
+                customerCart.add(CartItem("Child ticket for" + selectedEvent.name, childCount.toString().toInt(), selectedEvent.price))
+            }
         }
 
     } else {

@@ -63,7 +63,7 @@ fun findTotal(cart: List<CartItem>): Double {
 }
 
 fun readPurchase(cart: List<CartItem>): String {
-    val outputString = cart.joinToString(separator = "\\n") { "${it.quantity} ${it.item}" }
+    val outputString = cart.joinToString(separator = "\n") { "${it.quantity} ${it.item}" }
     return "$outputString For a total of $${findTotal(cart)}"
 }
 
