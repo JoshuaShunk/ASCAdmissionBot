@@ -10,6 +10,11 @@ fun to12HourFormat(time: String): String {
 }
 
 fun normalizeTimeInput(timeInput: String): String? {
+
+    if (timeInput == ""){
+        return null
+    }
+
     // Clean the input string: remove "a.m.", "p.m.", "am", "pm" and trim whitespace
     val cleanedInput = timeInput.replace("a.m.", "").replace("p.m.", "").replace("am", "").replace("pm", "").trim()
     // 1. Extract time mentions from the sentence

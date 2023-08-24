@@ -7,7 +7,6 @@ import furhatos.app.templateadvancedskill.flow.main.to12HourFormat
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.Number
 
-
 fun filterPastTimes(event: Event): List<String> {
     val (currentHour, currentMinute) = getCurrentTime()
     return event.time.filter {
@@ -33,28 +32,35 @@ fun eventNames(events: List<Event>): String {
 }
 
 fun confirmEventPurchase(furhat: Furhat, selectedEvent: Event?, selectedTime: String?) {
-    val convertedTime = selectedTime?.let { normalizeTimeInput(it)?.let { it1 -> to12HourFormat(it1) } }
+    val convertedTime = selectedTime?.let { to12HourFormat(it) }
     val confirmedAdd = furhat.askYN("Just to confirm. You want to add ${selectedEvent?.name} at $convertedTime at a price of $${selectedEvent?.price} per ticket?")
 
     if (confirmedAdd == true) {
-        var adultCount: Number? = null
-        var childCount: Number? = null
 
-        while (adultCount == null) {
-            adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
-            if (adultCount == null) {
-                furhat.say("Please enter a valid number for adult tickets.")
+
+        if(furhat.askYN("Do you want to add tickets for your whole party?") == true){
+            furhat.say("Adding ${customerCart[0].quantity} adult tickets and ${customerCart[1].quantity} child tickets for the $convertedTime showing of ${selectedEvent?.name} to your purchase!")
+        }else{
+            var adultCount: Number? = null
+            var childCount: Number? = null
+
+            while (adultCount == null) {
+                adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
+                if (adultCount == null) {
+                    furhat.say("Please enter a valid number for adult tickets.")
+                }
             }
+
+            while (childCount == null) {
+                childCount = furhat.askFor<Number>("How many children ages 3-17?")
+                if (childCount == null) {
+                    furhat.say("Please enter a valid number for child tickets.")
+                }
+            }
+
+            furhat.say("Adding $adultCount adult tickets and $childCount child tickets for the $convertedTime showing of ${selectedEvent?.name} to your purchase!")
         }
 
-        while (childCount == null) {
-            childCount = furhat.askFor<Number>("How many children ages 3-17?")
-            if (childCount == null) {
-                furhat.say("Please enter a valid number for child tickets.")
-            }
-        }
-
-        furhat.say("Adding $adultCount adult tickets and $childCount child tickets for the $selectedTime showing of ${selectedEvent?.name} to your purchase!")
     } else {
         furhat.ask("What event would you like to purchase tickets for?")
     }

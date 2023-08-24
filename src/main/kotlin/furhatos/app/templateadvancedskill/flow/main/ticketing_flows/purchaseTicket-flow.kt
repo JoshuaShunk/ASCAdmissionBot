@@ -22,6 +22,7 @@ import furhatos.util.Language
 
 val PurchaseTicket: State = state {
 
+
     onEntry {
         furhat.say("Thank you for your interest in exploring the science center today!")
         val adultCount: Number? = furhat.askFor<Number>("How many adult tickets would you like to purchase?")

@@ -3,6 +3,7 @@ package furhatos.app.templateadvancedskill.flow.main.ticketing_flows.planetarium
 
 import furhatos.app.templateadvancedskill.flow.main.normalizeTimeInput
 import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.*
+import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.screening.PurchaseScreenings
 import furhatos.app.templateadvancedskill.flow.main.ticketing_flows.traveling.travelingExhibitAddOn
 import furhatos.app.templateadvancedskill.flow.main.to12HourFormat
 import furhatos.app.templateadvancedskill.flow.main.to24HourFormat
@@ -19,7 +20,7 @@ val PurchaseShows: State = state {
             if (availableTimes.size == 1) {
                 val buyTickets = furhat.askYN("At the science center today we are showing ${onlyShow.name} at ${to12HourFormat(availableTimes.first())}. Would you like to purchase tickets for this screening?")
                 if(buyTickets == true){goto(ConfirmShowWithOneTime)}
-                else{goto(travelingExhibitAddOn)}
+                else{goto(PurchaseScreenings)}
 
             } else if (availableTimes.size > 1){
                 if (furhat.askYN("At the science center today we are showing ${onlyShow.name} at the following times: ${
@@ -28,18 +29,18 @@ val PurchaseShows: State = state {
                         ) { to12HourFormat(it) }
                     }. Would you like to purchase tickets for one of these screenings?")==true){
                     goto(AskForTimeForSingleShow)
-                }else{goto(travelingExhibitAddOn)}
+                }else{goto(PurchaseScreenings)}
             }else{
                 //furhat.say("Sorry. There are no more available showing of ${onlyShow.showName} today. Come back another time to watch it!")
-                goto(travelingExhibitAddOn)
+                goto(PurchaseScreenings)
             }
         } else if (todayShows.size > 1) {
             if (furhat.askYN("At the science center today we have the following screenings: ${eventNames(todayShows)}. Would you like to purchase tickets for any of these?") == true){
                 goto(AskForSpecificShow)
-            } else {goto(travelingExhibitAddOn)}
+            } else {goto(PurchaseScreenings)}
         } else {
             furhat.say("Sorry there are no more available screenings today.")
-            goto(travelingExhibitAddOn)
+            goto(PurchaseScreenings)
         }
 
     }
@@ -57,10 +58,11 @@ val AskForTimeForSingleShow: State = state {
         print("Normalized Time: " + normalizeTimeInput(it.text))
 
         if (normalizeTimeInput(it.text) != null) {
-
+            print("Normalized Time: " + normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) })
             if (normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) } in selectedShow.time) {
-                confirmEventPurchase(furhat, selectedShow, it.text)
-                goto(travelingExhibitAddOn)
+                confirmEventPurchase(furhat, selectedShow,
+                    normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) })
+                goto(PurchaseScreenings)
             } else {
                 furhat.say("Sorry, that's not a valid show time for ${selectedShow.name}.")
                 reentry()
@@ -73,8 +75,8 @@ val ConfirmShowWithOneTime: State = state {
     onEntry {
         val onlyShow = todayShows.first()
         val availableTimes = filterPastTimes(onlyShow)
-        confirmEventPurchase(furhat, onlyShow, to12HourFormat(availableTimes.first()))
-        goto(travelingExhibitAddOn)
+        confirmEventPurchase(furhat, onlyShow, normalizeTimeInput(availableTimes.first())?.let { to24HourFormat(it) })
+        goto(PurchaseScreenings)
     }
 }
 
@@ -89,10 +91,11 @@ val AskForSpecificShow: State = state {
     }
 
     onResponse<Time> {
+        print("Printed Time: " + normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) })
         if (selectedShow != null && normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) } in selectedShow!!.time) {
-            selectedTime = normalizeTimeInput(it.text)
+            selectedTime = normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) }
             confirmEventPurchase(furhat, selectedShow, selectedTime)
-            goto(travelingExhibitAddOn)
+            goto(PurchaseScreenings)
         } else if (selectedShow != null) {
             furhat.say("Sorry, that's not a valid show time for ${selectedShow?.name}.")
             reentry()
@@ -102,9 +105,9 @@ val AskForSpecificShow: State = state {
     onResponse {
         val normalizedTime = normalizeTimeInput(it.text.toLowerCase())
         if(normalizedTime != null && normalizedTime in selectedShow!!.time && selectedShow != null){
-            selectedTime = it.text
-            confirmEventPurchase(furhat, selectedShow, selectedTime)
-            goto(travelingExhibitAddOn)
+            selectedTime = normalizedTime
+            confirmEventPurchase(furhat, selectedShow, normalizedTime)
+            goto(PurchaseScreenings)
         }
         else {
             val userInput = it.text.toLowerCase()
@@ -123,7 +126,7 @@ val AskForSpecificShow: State = state {
         }
 
         if (selectionSuccess) {
-            goto(travelingExhibitAddOn)
+            goto(PurchaseScreenings)
         } else {
             reentry()
         }

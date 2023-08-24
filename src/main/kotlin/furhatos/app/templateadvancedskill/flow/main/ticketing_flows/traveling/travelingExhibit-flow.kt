@@ -62,13 +62,19 @@ val travelingExhibitAddOn: State = state {
         val confirmedAdd = furhat.askYN("Just to confirm. You want to add " + showIntent.exhibitName  + "at a price of $" + showIntent.price.toString() + "per ticket?")
 
         if(confirmedAdd != false){
-            val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
-            val childCount = furhat.askFor<Number>("How many children ages 3-17?")
-            addToCart(showIntent.exhibitName, adultCount.toString().toInt(), childCount.toString().toInt(), showIntent.price)
-            furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for " + showIntent.exhibitName + " to your purchase!")
+
+            if(furhat.askYN("Do you want to add tickets for your whole party?") == true){
+                furhat.say("I have added " + customerCart[0].quantity + " adult tickets and " + customerCart[1].quantity + " child tickets for " + showIntent.exhibitName + " to your purchase!")
+                addToCart(showIntent.exhibitName, customerCart[0].quantity.toString().toInt(), customerCart[1].quantity.toString().toInt(), showIntent.price)
+            } else{
+                val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
+                val childCount = furhat.askFor<Number>("How many children ages 3-17?")
+                furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for " + showIntent.exhibitName + " to your purchase!")
+            }
             if(furhat.askYN("Is there anything else you would like to add to your purchase") != true){
                 goto(Checkout)
             }
+
         }
         else{
             furhat.ask("What show would you like to purchase tickets for?")

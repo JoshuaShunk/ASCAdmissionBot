@@ -73,7 +73,8 @@ val AskForTimeForSingleScreening: State = state {
 val ConfirmScreeningWithOneTime: State = state {
     onEntry {
         val onlyScreening = todayScreenings.first()
-        confirmEventPurchase(furhat, onlyScreening, onlyScreening.time.first())
+        confirmEventPurchase(furhat, onlyScreening,
+            normalizeTimeInput(onlyScreening.time.first())?.let { to24HourFormat(it) })
         goto(travelingExhibitAddOn)
     }
 }
@@ -90,19 +91,21 @@ val AskForSpecificScreening: State = state {
 
     onResponse<Time> {
         if (selectedScreening != null && normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) } in selectedScreening!!.time) {
-            selectedTime = normalizeTimeInput(it.text)
+            selectedTime = normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) }
             confirmEventPurchase(furhat, selectedScreening, selectedTime)
             goto(travelingExhibitAddOn)
         } else if (selectedScreening != null) {
             furhat.say("Sorry, that's not a valid screening time for ${selectedScreening?.name}.")
             reentry()
+        } else{
+            furhat.ask("Sorry, I'm not sure what you said. Can you repeat the screening time again?")
         }
     }
 
     onResponse {
         val normalizedTime = normalizeTimeInput(it.text.toLowerCase())
         if(normalizedTime != null && normalizedTime in selectedScreening!!.time && selectedScreening != null){
-            selectedTime = it.text
+            selectedTime = normalizeTimeInput(it.text)?.let { it1 -> to24HourFormat(it1) }
             confirmEventPurchase(furhat, selectedScreening, selectedTime)
             goto(travelingExhibitAddOn)
         }
