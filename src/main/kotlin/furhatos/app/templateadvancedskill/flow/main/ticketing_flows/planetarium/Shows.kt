@@ -18,5 +18,6 @@ data class Show(
 // List of available shows for the day
 val todayShows = listOf(
     Show("Expedition Solar System", listOf("11:30", "14:30"), 9.50),
-    Show("Arizona Skies", listOf("13:00"), 11.50)
+    Show("Arizona Skies", listOf("13:00"), 11.50),
+    Show("Stary Story Time", listOf("14:00"), 12.50)
 )
