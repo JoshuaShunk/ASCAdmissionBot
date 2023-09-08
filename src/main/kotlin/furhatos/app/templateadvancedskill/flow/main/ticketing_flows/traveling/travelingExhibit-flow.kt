@@ -34,10 +34,16 @@ val travelingExhibitAddOn: State = state {
                 val confirmedAdd = furhat.askYN("Just to confirm. You want to add " + todayExhibit[0].exhibitName  + " at a price of $" + todayExhibit[0].price.toString() + " per ticket?")
 
                 if(confirmedAdd != false){
-                    val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
-                    val childCount = furhat.askFor<Number>("How many children ages 3-17?")
-                    addToCart(todayExhibit[0].exhibitName, adultCount.toString().toInt(), childCount.toString().toInt(), todayExhibit[0].price)
-                    furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for " + todayExhibit[0].exhibitName + " to your purchase!")
+                    if(furhat.askYN("Do you want to add tickets for your whole party?") == true){
+                        furhat.say("I have added " + customerCart[0].quantity + " adult tickets and " + customerCart[1].quantity + " child tickets for " + todayExhibit[0].exhibitName + " to your purchase!")
+
+                        addToCart(todayExhibit[0].exhibitName, customerCart[0].quantity.toString().toInt(), customerCart[1].quantity.toString().toInt(), todayExhibit[0].price)
+                    } else{
+                        val adultCount = furhat.askFor<Number>("How many adult tickets would you like to purchase?")
+                        val childCount = furhat.askFor<Number>("How many children ages 3-17?")
+                        addToCart(todayExhibit[0].exhibitName, adultCount.toString().toInt(), childCount.toString().toInt(), todayExhibit[0].price)
+                        furhat.say("I have added " + adultCount + " adult tickets and " + childCount + " child tickets for " + todayExhibit[0].exhibitName + " to your purchase!")
+                    }
                     if(furhat.askYN("Is there anything else you would like to add to your purchase") != true){
                         goto(Checkout)
                     }
